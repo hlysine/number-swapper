@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Game from './Game';
 import { BiReset, BiUndo } from 'react-icons/bi';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 function generateBoard(width: number, height: number) {
   const list = Array.from({ length: width * height }, (_, i) => i + 1);
@@ -48,6 +49,9 @@ export default function App() {
     if (board === start) return;
     setBoardWithHistory(start);
   };
+
+  useHotkeys('z', undo, { preventDefault: true });
+  useHotkeys('r', reset, { preventDefault: true });
 
   return (
     <div className="flex flex-wrap h-dvh w-dvw">
@@ -102,12 +106,12 @@ export default function App() {
         </div>
         <ul className="menu menu-lg menu-horizontal bg-base-200 rounded-box mt-6 justify-center">
           <li className={history.length === 0 ? 'disabled' : ''}>
-            <a className="tooltip" data-tip="Undo" onClick={undo}>
+            <a className="tooltip" data-tip="Undo (z)" onClick={undo}>
               <BiUndo />
             </a>
           </li>
           <li>
-            <a className="tooltip" data-tip="Reset" onClick={reset}>
+            <a className="tooltip" data-tip="Reset (r)" onClick={reset}>
               <BiReset />
             </a>
           </li>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Board from './Board';
 import { FaArrowsAlt, FaArrowsAltH, FaArrowsAltV } from 'react-icons/fa';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 export interface GameProps {
   board: string[][];
@@ -92,13 +93,17 @@ export default function Game({ board, onChange }: GameProps) {
   const onTileClick = (x: number, y: number) => {
     if (!selection) return;
     if (selection.type === 'row') {
-      if (selection.indices.includes(y)) {
+      if (y === 0 || y === board.length - 1) {
+        setSelection({ ...selection, indices: [] });
+      } else if (selection.indices.includes(y)) {
         setSelection({ ...selection, indices: selection.indices.filter(i => i !== y) });
       } else {
         setSelection({ ...selection, indices: [...selection.indices, y] });
       }
     } else if (selection.type === 'column') {
-      if (selection.indices.includes(x)) {
+      if (x === 0 || x === board[0].length - 1) {
+        setSelection({ ...selection, indices: [] });
+      } else if (selection.indices.includes(x)) {
         setSelection({ ...selection, indices: selection.indices.filter(i => i !== x) });
       } else {
         setSelection({ ...selection, indices: [...selection.indices, x] });
@@ -118,13 +123,15 @@ export default function Game({ board, onChange }: GameProps) {
         ) {
           setSelection({ ...selection, indices: [] });
         } else {
-          const existingSidedness =
-            Math.min(2, Math.abs(selectedX - 0), Math.abs(selectedX - (board[0].length - 1))) +
-            Math.min(2, Math.abs(selectedY - 0), Math.abs(selectedY - (board.length - 1)));
-          const newSidedness =
-            Math.min(2, Math.abs(x - 0), Math.abs(x - (board[0].length - 1))) +
-            Math.min(2, Math.abs(y - 0), Math.abs(y - (board.length - 1)));
-          if (existingSidedness !== newSidedness) {
+          const existingSidednessX = Math.min(2, Math.abs(selectedX - 0), Math.abs(selectedX - (board[0].length - 1)));
+          const existingSidednessY = Math.min(2, Math.abs(selectedY - 0), Math.abs(selectedY - (board.length - 1)));
+          const newSidednessX = Math.min(2, Math.abs(x - 0), Math.abs(x - (board[0].length - 1)));
+          const newSidednessY = Math.min(2, Math.abs(y - 0), Math.abs(y - (board.length - 1)));
+          if (
+            (existingSidednessX === 1 && existingSidednessY === 1) ||
+            (newSidednessX === 1 && newSidednessY === 1) ||
+            Math.min(existingSidednessX, existingSidednessY) !== Math.min(newSidednessX, newSidednessY)
+          ) {
             setSelection({ ...selection, indices: [] });
           } else {
             setSelection({ ...selection, indices: [...selection.indices, [x, y]] });
@@ -143,6 +150,10 @@ export default function Game({ board, onChange }: GameProps) {
     }
   }, [board, selection, onChange]);
 
+  useHotkeys('a', () => setSelection({ type: 'row', indices: [] }), { preventDefault: true });
+  useHotkeys('s', () => setSelection({ type: 'column', indices: [] }), { preventDefault: true });
+  useHotkeys('d', () => setSelection({ type: 'cross', indices: [] }), { preventDefault: true });
+
   return (
     <div className="flex flex-col max-w-full">
       <Board board={board} highlight={highlight} onClick={onTileClick} />
@@ -150,7 +161,7 @@ export default function Game({ board, onChange }: GameProps) {
         <li>
           <a
             className={`tooltip ${selection?.type === 'row' ? 'active' : ''}`}
-            data-tip="Swap rows"
+            data-tip="Swap rows (a)"
             onClick={() => setSelection({ type: 'row', indices: [] })}
           >
             <FaArrowsAltH />
@@ -159,7 +170,7 @@ export default function Game({ board, onChange }: GameProps) {
         <li>
           <a
             className={`tooltip ${selection?.type === 'column' ? 'active' : ''}`}
-            data-tip="Swap columns"
+            data-tip="Swap columns (s)"
             onClick={() => setSelection({ type: 'column', indices: [] })}
           >
             <FaArrowsAltV />
@@ -168,7 +179,7 @@ export default function Game({ board, onChange }: GameProps) {
         <li>
           <a
             className={`tooltip ${selection?.type === 'cross' ? 'active' : ''}`}
-            data-tip="Swap cross"
+            data-tip="Swap cross (d)"
             onClick={() => setSelection({ type: 'cross', indices: [] })}
           >
             <FaArrowsAlt />
