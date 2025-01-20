@@ -2,17 +2,21 @@ import { useState } from 'react';
 import Game from './Game';
 import { BiReset, BiUndo } from 'react-icons/bi';
 
-const defaultBoard = [
-  ['', '', '', '', '', '', '', '', ''],
-  ['', '1', '2', '3', '4', '5', '6', '7', ''],
-  ['', '8', '9', '10', '11', '12', '13', '14', ''],
-  ['', '15', '16', '17', '18', '19', '20', '21', ''],
-  ['', '22', '23', '24', '25', '26', '27', '28', ''],
-  ['', '29', '30', '31', '32', '33', '34', '35', ''],
-  ['', '36', '37', '38', '39', '40', '41', '42', ''],
-  ['', '43', '44', '45', '46', '47', '48', '49', ''],
-  ['', '', '', '', '', '', '', '', ''],
-];
+function generateBoard(width: number, height: number) {
+  const list = Array.from({ length: width * height }, (_, i) => i + 1);
+  const newBoard = Array.from({ length: height + 2 }, (_, i) => {
+    return Array.from({ length: width + 2 }, (_, j) => {
+      if (i === 0 || i === height + 1 || j === 0 || j === width + 1) return '';
+      const index = Math.floor(Math.random() * list.length);
+      const value = list[index];
+      list.splice(index, 1);
+      return value.toString();
+    });
+  });
+  return newBoard;
+}
+
+const defaultBoard = generateBoard(7, 7);
 
 export default function App() {
   const [history, setHistory] = useState<string[][][]>([]);
@@ -22,17 +26,8 @@ export default function App() {
   const [width, setWidth] = useState(7);
   const [height, setHeight] = useState(7);
 
-  const generateGrid = () => {
-    const list = Array.from({ length: width * height }, (_, i) => i + 1);
-    const newBoard = Array.from({ length: height + 2 }, (_, i) => {
-      return Array.from({ length: width + 2 }, (_, j) => {
-        if (i === 0 || i === height + 1 || j === 0 || j === width + 1) return '';
-        const index = Math.floor(Math.random() * list.length);
-        const value = list[index];
-        list.splice(index, 1);
-        return value.toString();
-      });
-    });
+  const generateNewGame = () => {
+    const newBoard = generateBoard(width, height);
     setBoard(newBoard);
     setStart(newBoard);
     setHistory([]);
@@ -92,7 +87,7 @@ export default function App() {
               </label>
             </div>
             <div className="card-actions justify-end">
-              <button className="btn btn-primary" onClick={generateGrid}>
+              <button className="btn btn-primary" onClick={generateNewGame}>
                 New game
               </button>
             </div>
