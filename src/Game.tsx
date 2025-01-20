@@ -32,6 +32,10 @@ const crossOffsets = [
   [-1, 0],
 ];
 
+function isInBounds(board: string[][], x: number, y: number) {
+  return x >= 0 && x < board[0].length && y >= 0 && y < board.length;
+}
+
 function executeSwap(board: string[][], selection: Selection) {
   const newBoard = board.map(row => [...row]);
   if (selection.indices.length !== 2) return newBoard;
@@ -56,6 +60,7 @@ function executeSwap(board: string[][], selection: Selection) {
         const [dx, dy] = crossOffsets[i];
         const [sx1, sy1] = [x1 + dx, y1 + dy];
         const [sx2, sy2] = [x1 + dx, Math.round(midY + (midY - y1 - dy))];
+        if (!isInBounds(newBoard, sx1, sy1) || !isInBounds(newBoard, sx2, sy2)) continue;
         [newBoard[sy1][sx1], newBoard[sy2][sx2]] = [newBoard[sy2][sx2], newBoard[sy1][sx1]];
       }
     } else {
@@ -64,6 +69,7 @@ function executeSwap(board: string[][], selection: Selection) {
         const [dx, dy] = crossOffsets[i];
         const [sx1, sy1] = [x1 + dx, y1 + dy];
         const [sx2, sy2] = [Math.round(midX + (midX - x1 - dx)), y1 + dy];
+        if (!isInBounds(newBoard, sx1, sy1) || !isInBounds(newBoard, sx2, sy2)) continue;
         [newBoard[sy1][sx1], newBoard[sy2][sx2]] = [newBoard[sy2][sx2], newBoard[sy1][sx1]];
       }
     }
