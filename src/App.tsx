@@ -19,8 +19,8 @@ export default function App() {
   const [start, setStart] = useState(defaultBoard);
   const [board, setBoard] = useState(defaultBoard);
 
-  const [width, setWidth] = useState(5);
-  const [height, setHeight] = useState(5);
+  const [width, setWidth] = useState(7);
+  const [height, setHeight] = useState(7);
 
   const generateGrid = () => {
     const list = Array.from({ length: width * height }, (_, i) => i + 1);
