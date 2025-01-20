@@ -61,6 +61,10 @@ export default function App() {
             <h2 className="card-title">Number swapper</h2>
             <p>Pick a grid size and press start. Your goal is to arrange the numbers in ascending order.</p>
             <p>
+              Use the three provided tools to swap rows, columns, or crosses. Swapping is only allowed when both regions
+              have the same shape.
+            </p>
+            <p>
               View the source code of this app on{' '}
               <a className="link link-secondary" href="https://github.com/hlysine/number-swapper" target="_blank">
                 GitHub
